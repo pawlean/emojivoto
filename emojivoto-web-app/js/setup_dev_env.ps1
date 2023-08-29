@@ -160,7 +160,7 @@ function connect_local_dev_env_to_remote{
 
     $svcName = "edge-stack"
     telepresence quit 2>&1 | Out-Null
-    telepresence helm upgrade --team-mode 2>&1 | Out-Null
+    telepresence helm upgrade 2>&1 | Out-Null
     telepresence login --apikey="$Env:AMBASSADOR_API_KEY"  2>&1 | Out-Null
     telepresence quit -s 2>&1 | Out-Null
     telepresence connect --docker 2>&1 | Out-Null

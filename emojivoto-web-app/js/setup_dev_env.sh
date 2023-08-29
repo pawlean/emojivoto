@@ -196,7 +196,7 @@ connect_local_dev_env_to_remote() {
     fi
 
     telepresence quit
-    telepresence helm upgrade --team-mode
+    telepresence helm upgrade
     telepresence login --apikey=${AMBASSADOR_API_KEY}
     telepresence quit -s
     telepresence connect --docker
