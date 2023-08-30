@@ -166,7 +166,7 @@ function connect_local_dev_env_to_remote{
     telepresence connect --docker 2>&1 | Out-Null
 
     $interceptName = (kubectl get rs -n emojivoto --selector=app=web-app --no-headers -o custom-columns=":metadata.name")
-    telepresence intercept "$interceptName" --docker --context default -n "$Global:EMOJIVOTO_NS" --service web-app --port 8083:80 --ingress-port 80 --ingress-host "$svcName.ambassador" --ingress-l5 "$svcName.ambassador"
+    telepresence intercept "$interceptName" --docker --context default -n "$Global:EMOJIVOTO_NS" --service web-app --port 8083:80 --ingress-port 80 --ingress-host "$svcName.ambassador" --ingress-l5 "$svcName.ambassador" --preview-url=true
 
     $telOut = $LASTEXITCODE
     if ($telOut -ne 0) {
