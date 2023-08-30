@@ -177,7 +177,7 @@ install_upgrade_telepresence() {
         fi
     fi    
     if [ $install_telepresence = true ]; then
-        sudo curl -fL https://app.getambassador.io/download/tel2/${OS}/${ARCH}/2.14.4/telepresence -o /usr/local/bin/telepresence
+        sudo curl -fL https://app.getambassador.io/download/tel2/${OS}/${ARCH}/2.15.0/telepresence -o /usr/local/bin/telepresence
         sudo chmod a+x /usr/local/bin/telepresence
         send_telemetry "telepresenceInstalled"
     fi
@@ -196,13 +196,13 @@ connect_local_dev_env_to_remote() {
     fi
 
     telepresence quit
-    telepresence helm upgrade --team-mode
+    telepresence helm upgrade
     telepresence login --apikey=${AMBASSADOR_API_KEY}
     telepresence quit -s
     telepresence connect --docker
     
     interceptName=$(kubectl get rs -n emojivoto --selector=app=web-app --no-headers -o custom-columns=":metadata.name")
-    telepresence intercept ${interceptName} --docker --context default -n ${EMOJIVOTO_NS} --service web-app --port 8083:80 --ingress-port 80 --ingress-host ${svcName}.ambassador --ingress-l5 ${svcName}.ambassador
+    telepresence intercept ${interceptName} --docker --context default -n ${EMOJIVOTO_NS} --service web-app --port 8083:80 --ingress-port 80 --ingress-host ${svcName}.ambassador --ingress-l5 ${svcName}.ambassador --preview-url=true
 
     telOut=$?
     if [ $telOut != 0 ]; then

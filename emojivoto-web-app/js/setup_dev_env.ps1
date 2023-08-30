@@ -144,7 +144,7 @@ function install_upgrade_telepresence{
         }
     }
     if ($install_telepresence) {
-        $telepresence_download_url = "https://app.getambassador.io/download/tel2/windows/amd64/2.14.4/telepresence-setup.exe"
+        $telepresence_download_url = "https://app.getambassador.io/download/tel2/windows/amd64/2.15.0/telepresence-setup.exe"
         Invoke-WebRequest $telepresence_download_url -OutFile telepresence-setup.exe
         Start-Process .\telepresence-setup.exe -NoNewWindow -Wait
         Remove-Item telepresence-setup.exe -Recurse -Confirm:$false -Force
@@ -160,13 +160,13 @@ function connect_local_dev_env_to_remote{
 
     $svcName = "edge-stack"
     telepresence quit 2>&1 | Out-Null
-    telepresence helm upgrade --team-mode 2>&1 | Out-Null
+    telepresence helm upgrade 2>&1 | Out-Null
     telepresence login --apikey="$Env:AMBASSADOR_API_KEY"  2>&1 | Out-Null
     telepresence quit -s 2>&1 | Out-Null
     telepresence connect --docker 2>&1 | Out-Null
 
     $interceptName = (kubectl get rs -n emojivoto --selector=app=web-app --no-headers -o custom-columns=":metadata.name")
-    telepresence intercept "$interceptName" --docker --context default -n "$Global:EMOJIVOTO_NS" --service web-app --port 8083:80 --ingress-port 80 --ingress-host "$svcName.ambassador" --ingress-l5 "$svcName.ambassador"
+    telepresence intercept "$interceptName" --docker --context default -n "$Global:EMOJIVOTO_NS" --service web-app --port 8083:80 --ingress-port 80 --ingress-host "$svcName.ambassador" --ingress-l5 "$svcName.ambassador" --preview-url=true
 
     $telOut = $LASTEXITCODE
     if ($telOut -ne 0) {
