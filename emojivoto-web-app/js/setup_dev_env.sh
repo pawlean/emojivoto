@@ -199,10 +199,10 @@ connect_local_dev_env_to_remote() {
     telepresence helm upgrade
     telepresence login --apikey=${AMBASSADOR_API_KEY}
     telepresence quit -s
-    telepresence connect --docker
+    telepresence connect --docker --context default --namespace ${EMOJIVOTO_NS}
     
     interceptName=$(kubectl get rs -n emojivoto --selector=app=web-app --no-headers -o custom-columns=":metadata.name")
-    telepresence intercept ${interceptName} --docker --context default -n ${EMOJIVOTO_NS} --service web-app --port 8083:80 --ingress-port 80 --ingress-host ${svcName}.ambassador --ingress-l5 ${svcName}.ambassador --preview-url=true
+    telepresence intercept ${interceptName} --service web-app --port 8083:80 --ingress-port 80 --ingress-host ${svcName}.ambassador --ingress-l5 ${svcName}.ambassador --preview-url=true
 
     telOut=$?
     if [ $telOut != 0 ]; then
