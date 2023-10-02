@@ -98,7 +98,7 @@ function run_dev_container{
     if ($CONTAINER_ID) {
         docker kill $CONTAINER_ID >$null
     }
-    docker run -d --name ambassador-demo --pull always --network=container:tp-default --rm -it -v ${PWD}:/opt/emojivoto/emojivoto-web-app/js datawire/intermediate-tour:20230515.154709
+    docker run -d --name ambassador-demo --pull always --network=container:tp-default-emojivoto-cn --rm -it -v ${PWD}:/opt/emojivoto/emojivoto-web-app/js datawire/intermediate-tour:20230515.154709
     $CONTAINER_ID=$(docker ps --filter 'name=ambassador-demo' --format '{{.ID}}')
     send_telemetry("devContainerStarted")
 }
@@ -144,7 +144,7 @@ function install_upgrade_telepresence{
         }
     }
     if ($install_telepresence) {
-        $telepresence_download_url = "https://app.getambassador.io/download/tel2/windows/amd64/2.15.1/telepresence-setup.exe"
+        $telepresence_download_url = "https://app.getambassador.io/download/tel2/windows/amd64/2.16.0/telepresence-setup.exe"
         Invoke-WebRequest $telepresence_download_url -OutFile telepresence-setup.exe
         Start-Process .\telepresence-setup.exe -NoNewWindow -Wait
         Remove-Item telepresence-setup.exe -Recurse -Confirm:$false -Force
@@ -163,10 +163,10 @@ function connect_local_dev_env_to_remote{
     telepresence helm upgrade 2>&1 | Out-Null
     telepresence login --apikey="$Env:AMBASSADOR_API_KEY"  2>&1 | Out-Null
     telepresence quit -s 2>&1 | Out-Null
-    telepresence connect --docker 2>&1 | Out-Null
+    telepresence connect --docker --context default -n "$Global:EMOJIVOTO_NS" 2>&1 | Out-Null
 
     $interceptName = (kubectl get rs -n emojivoto --selector=app=web-app --no-headers -o custom-columns=":metadata.name")
-    telepresence intercept "$interceptName" --docker --context default -n "$Global:EMOJIVOTO_NS" --service web-app --port 8083:80 --ingress-port 80 --ingress-host "$svcName.ambassador" --ingress-l5 "$svcName.ambassador" --preview-url=true
+    telepresence intercept "$interceptName" --service web-app --port 8083:80 --ingress-port 80 --ingress-host "$svcName.ambassador" --ingress-l5 "$svcName.ambassador" --preview-url=true
 
     $telOut = $LASTEXITCODE
     if ($telOut -ne 0) {
